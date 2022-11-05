@@ -33,6 +33,7 @@ class _HeaderWidget extends State<HeaderWidget> {
               padding: EdgeInsets.fromLTRB(16, vh * 0.2, 16, 50),
             child: TextField(
               decoration: InputDecoration(
+                  prefixIcon: const Icon(Icons.search, color: Colors.blue),
                   hintStyle: const TextStyle(color: Colors.grey),
                   hintText: "Start typing to search...",
                   border: OutlineInputBorder(
@@ -52,7 +53,8 @@ class _HeaderWidget extends State<HeaderWidget> {
           child: Container(
             decoration:BoxDecoration(
               color: Colors.white,
-              borderRadius: BorderRadius.circular(30.0),),
+              borderRadius: BorderRadius.circular(30.0),
+            ),
             height: vh * 0.5,
             child: Column(
                 children: [
@@ -62,14 +64,15 @@ class _HeaderWidget extends State<HeaderWidget> {
                             height: 100,
                             width: 100,
                             image: AssetImage('assets/cloud.png'),),
-                          Padding(padding: const EdgeInsets.all(20),
+                          Padding(padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: const [
                                 Padding(padding: EdgeInsets.all(5),
                                   child: Text('+ 23 C' ,
                                     style: TextStyle(
-                                    fontSize: 18,
+                                        fontSize: 18,
+                                        fontWeight: FontWeight.bold
                                   ),),
                                 ),
                                 Padding(padding: EdgeInsets.all(5),
@@ -94,7 +97,8 @@ class _HeaderWidget extends State<HeaderWidget> {
                         Padding(padding: EdgeInsets.all(19),
                           child: Text('Odessa, Ukraine',
                               style: TextStyle(
-                              fontSize: 18,)),
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,)),
                         ),
                         Padding(padding: EdgeInsets.all(16),
                           child: Text('10 March 2020',
@@ -108,24 +112,41 @@ class _HeaderWidget extends State<HeaderWidget> {
                       margin: const EdgeInsets.only(left: 30.0, right: 30.0),
                       child: const Divider(
                         color: Colors.black,
-                        height: 100,
+                        height: 50,
                       )),
-                 /* Row(
-                    children: [
-                      Column(
-                        children: const [
-                          Text('Min'),
-                          Text('-33°C'),
-                        ],
-                      ),
-                      Column(
-                        children: const [
-                          Text('Min'),
-                          Text('-33°C'),
-                        ],
-                      )
-                    ],
-                  )*/
+                  Padding(
+                    padding: const EdgeInsets.fromLTRB(30, 10, 30, 0),
+                    child: Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceAround,
+                      children: [
+                        Column(
+                          children: const [
+                            Text('Min' , style: TextStyle(
+                              fontSize: 16,
+                              color: Colors.grey
+                            ),),
+                            Text('-33°C', style: TextStyle(
+                                fontWeight: FontWeight.bold,
+                                fontSize: 18,
+                            ),),
+                          ],
+                        ),
+                        Container(height: 50, child: const VerticalDivider(color: Colors.black)),
+                        Column(
+                          children: const [
+                            Text('Max' , style: TextStyle(
+                                fontSize: 16,
+                                color: Colors.grey
+                            ),),
+                            Text('+33°C', style: TextStyle(
+                              fontWeight: FontWeight.bold,
+                              fontSize: 18,
+                            ),),
+                          ],
+                        ),
+                      ],
+                    ),
+                  )
                 ]
               ),
             )
@@ -134,6 +155,4 @@ class _HeaderWidget extends State<HeaderWidget> {
       ),
     );
   }
-
-
 }

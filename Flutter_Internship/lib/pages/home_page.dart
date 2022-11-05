@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_internship/widgets/header_widget.dart';
-
+import 'package:flutter_internship/widgets/cities_widget.dart';
 class HomePage extends StatelessWidget {
   const HomePage({Key? key}) : super(key: key);
 
@@ -12,9 +12,9 @@ class HomePage extends StatelessWidget {
           scrollDirection: Axis.vertical,
           children: const [
             HeaderWidget(),
+            CitiesWidget(),
           ],
         )
-
     )
     );
   }
