@@ -8,6 +8,7 @@ import 'package:jiffy/jiffy.dart';
 import 'dart:ui';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_internship/data/cities_list_data.dart';
+import '../model/deafault_weather.dart';
 import 'cities_widget.dart';
 
 class HeaderWidget extends StatefulWidget {
@@ -23,35 +24,49 @@ class City {
 }
 
 class _HeaderWidget extends State<HeaderWidget> {
+  _HeaderWidget() {
+    getNewData('');
+  }
+
   late double vh;
   late double vw;
   FetchWeatherAPI client = FetchWeatherAPI();
   Weather? data;
+  List<Weather>? dataList;
+  DefaultWeather _defaultWeather = new DefaultWeather();
   bool _isShowKeyboard = false;
   final _cities = citiesListData;
   final _searchController = TextEditingController();
   String defaultNum = "City not found, please try to change your search query";
-  late String tmpCityName;
-  late List<Map<String, String>> _filterCities = [{'name':'City not found', 'country':'please try to change your search query'}];
-  final Keyboard.KeyboardListener _keyboardListener = Keyboard.KeyboardListener();
+  late String tmpCityName = 'NULL';
+  late List<Map<String, String>> _filterCities = [
+    {
+      'name': 'City not found',
+      'country': 'please try to change your search query'
+    }
+  ];
+  final Keyboard.KeyboardListener _keyboardListener =
+      Keyboard.KeyboardListener();
   List namesCities = ['New York', 'London', 'Dubai', 'Paris'];
-  List assetsCities = ['assets/city_ny.png', 'assets/city_london.png', 'assets/city_dubai.png', 'assets/city_paris.png'];
+  List assetsCities = [
+    'assets/city_ny.png',
+    'assets/city_london.png',
+    'assets/city_dubai.png',
+    'assets/city_paris.png'
+  ];
 
   void _searchCities() {
     final query = _searchController.text;
-      if(query.isNotEmpty)
-        {
-            _filterCities = _cities.where((element) {
-              return element.containsValue(query);
-            }).toList();
-        }
-      else {
-        //_filterCities = defaultNum;
-      }
-    tmpCityName = _filterCities[0]['name'].toString() + ', '+ _filterCities[0]['country'].toString();
-    print("tmpCityName: " + tmpCityName);
-      setState((){
-      });
+    if (query.isNotEmpty) {
+      getNewCities(query);
+    } else {
+      //_filterCities = defaultNum;
+    }
+    setState(() {
+      resultList = resultList;
+      tmpCityName = resultList;
+      print("tmpCityName: $tmpCityName");
+    });
   }
 
   @override
@@ -65,19 +80,58 @@ class _HeaderWidget extends State<HeaderWidget> {
     });
   }
 
+  var resultList;
+
   @override
   void dispose() {
     _keyboardListener.dispose();
     super.dispose();
   }
 
+  Future<void> getNewCities(String city) async {
+    try {
+      var tmpData = await client.getCurrentWeatherListCities(city);
+      print('******************************');
+      print('${tmpData}');
+      resultList = [
+        for (var item in tmpData) "${item['name']}, ${item['sys']['country']}"
+      ];
+      print('------------------------');
+      print('$resultList');
+      print('------------------------');
+    } catch (e) {
+      print(e.runtimeType);
+    }
+  }
+
   Future<void> getNewData(String city) async {
-    data = await client.getCurrentWeather(city);
+    try {
+      /*for (var item in tmpData) {
+        print('//////////');
+        print('$item');
+        print('//////////');
+      }*/
+      print('$data');
+      data = await client.getCurrentWeather(city);
+    } catch (e) {
+      print(e.runtimeType);
+    }
+    ;
     if (city.isNotEmpty) {
       setState(() {
         data = data;
       });
     }
+    if (data?.name == null) {
+      //print('ERROR: ${data?.name}');
+      setState(() {
+        setDefaultWeather();
+      });
+    }
+  }
+
+  void setDefaultWeather() {
+    data = _defaultWeather;
   }
 
   @override
@@ -89,7 +143,7 @@ class _HeaderWidget extends State<HeaderWidget> {
         Container(
           height: vh * 1,
           width: vw,
-          decoration: BoxDecoration(
+          decoration: const BoxDecoration(
             image: DecorationImage(
                 image: AssetImage('assets/hero_bg.png'), fit: BoxFit.cover),
           ),
@@ -104,21 +158,18 @@ class _HeaderWidget extends State<HeaderWidget> {
     );
   }
 
-  Widget popularCity(){
+  Widget popularCity() {
     return SizedBox(
-      height: 1.7*vh,
+      height: 1.7 * vh,
       width: vw,
       child: Column(
-        children:  [
+        children: [
           const Padding(
               padding: EdgeInsets.only(top: 70, bottom: 35),
-              child: Text('Check the weather in most \n popular cities in the world',
-                style: TextStyle(
-                    fontSize: 28,
-                    fontWeight: FontWeight.bold
-                ),
-              )
-          ),
+              child: Text(
+                'Check the weather in most \n popular cities in the world',
+                style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+              )),
           Padding(
               padding: EdgeInsets.only(top: 10, bottom: 10),
               child: popularCity1(assetsCities[0], namesCities[0])),
@@ -136,9 +187,8 @@ class _HeaderWidget extends State<HeaderWidget> {
     );
   }
 
-
-
   Widget weatherInfo() {
+    getNewData('');
     return (Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -147,10 +197,10 @@ class _HeaderWidget extends State<HeaderWidget> {
       height: vh * 0.5,
       child: Column(children: [
         Row(children: [
-          const Image(
+          Image(
             height: 100,
             width: 100,
-            image: AssetImage('assets/cloud.png'),
+            image: AssetImage('assets/${data?.icon}.png'),
           ),
           Padding(
               padding: const EdgeInsets.fromLTRB(20, 20, 0, 20),
@@ -216,24 +266,22 @@ class _HeaderWidget extends State<HeaderWidget> {
     ));
   }
 
-  Widget itemCitiesList(String _filterCitiesItem)
-  {
-    return               Padding(
-        padding: EdgeInsets.fromLTRB(20, 0, 0, 0),
+  Widget  itemCitiesList(String _newCity) {
+    return Padding(
+        padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
         child: Container(
           //margin: EdgeInsets.all(10),
           width: 340,
           child: Padding(
             padding: EdgeInsets.fromLTRB(14, 7, 14, 7),
             child: Text(
-              '${_filterCitiesItem}',
+              '${_newCity}',
               //'Not found',
               style: TextStyle(fontSize: 16),
             ),
           ),
           decoration: BoxDecoration(
-              color: Colors.white10,
-              borderRadius: BorderRadius.circular(30.0)),
+              color: Colors.white10, borderRadius: BorderRadius.circular(30.0)),
         ));
   }
 
@@ -249,12 +297,28 @@ class _HeaderWidget extends State<HeaderWidget> {
         itemExtent: 50,
         itemBuilder: (BuildContext context, int index) {
           return Row(
-            children: [
-              itemCitiesList(tmpCityName),
-              //itemCitiesList(_filterCities.elementAt(1).toString()),
-              //itemCitiesList(_filterCities.elementAt(0).toString()),
-             // itemCitiesList(_filterCities.elementAt(1).toString()),
-            ],
+            children: resultList!=null?[for(var item in resultList) itemCitiesList(item)]:[Text('Penis')],
+
+              /*itemCitiesList(resultList)*/
+              /*resultList
+              .map(
+              (element) => {
+                if(element != null)
+                  itemCitiesList(element)
+                else {
+                  Container(child: null)
+                }
+              },*/
+
+            //[for(var item in resultList) itemCitiesList(item)],
+            /*MaterialButton(onPressed: (){
+              },
+                child: itemCitiesList(resultList),
+              )*/
+
+            //itemCitiesList(_filterCities.elementAt(1).toString()),
+            //itemCitiesList(_filterCities.elementAt(0).toString()),
+            // itemCitiesList(_filterCities.elementAt(1).toString()),
           );
         },
       ),
@@ -366,27 +430,22 @@ class _HeaderWidget extends State<HeaderWidget> {
     );
   }
 
-  void setCity(text)
-  {
+  void setCity(text) {
     print('setCity getNewData WORK');
     setState(() {
       print('setCity getNewData WORK');
       getNewData(text);
     });
-
   }
 
   @override
   Widget popularCity1(String url, String nameCity) {
-
     return Container(
-      height: vh* 0.32,
+      height: vh * 0.32,
       width: vw * 0.9,
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(30.0),
-        image: DecorationImage(
-            image: AssetImage(url),fit:BoxFit.cover
-        ),
+        image: DecorationImage(image: AssetImage(url), fit: BoxFit.cover),
       ),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -397,23 +456,21 @@ class _HeaderWidget extends State<HeaderWidget> {
             child: Container(
               height: 36,
               width: 323,
-              child:
-              MaterialButton(
-
+              child: MaterialButton(
                 onPressed: () {
-                print('namesCities: {$nameCity}');
-                if (nameCity.isNotEmpty) getNewData(nameCity.toString());
-              },
+                  print('namesCities: {$nameCity}');
+                  if (nameCity.isNotEmpty) getNewData(nameCity.toString());
+                },
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
                   side: const BorderSide(color: Colors.white),
                 ),
-                child: Text(nameCity,
+                child: Text(
+                  nameCity,
                   style: const TextStyle(
-                    color: Colors.black,
-                    fontWeight: FontWeight.normal
-                ),),
+                      color: Colors.black, fontWeight: FontWeight.normal),
+                ),
               ),
             ),
           ),
@@ -421,10 +478,7 @@ class _HeaderWidget extends State<HeaderWidget> {
       ),
     );
   }
-
 }
-
-
 
 /*
 typedef KeyboardChangeListener = Function(bool isVisible);

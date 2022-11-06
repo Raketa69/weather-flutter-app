@@ -34,4 +34,5 @@ class Weather {
       name = json["name"];
       country = json["sys"]["country"];
   }
+
 }
