@@ -1,8 +1,9 @@
 import 'dart:convert';
 import 'dart:core';
+import 'dart:ffi';
 
 class Weather {
-  double? temp;
+  var temp;
   double? tempMin;
   double? tempMax;
   var icon;

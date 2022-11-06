@@ -1,7 +1,8 @@
 import 'dart:core';
 import 'package:flutter/material.dart';
+import 'package:flutter_internship/widgets/header_widget.dart';
 
-class CitiesWidget extends StatefulWidget {
+/*class CitiesWidget extends StatefulWidget {
   const CitiesWidget({Key? key}) : super(key: key);
 
   @override
@@ -98,7 +99,9 @@ class _CityWidget extends State<CityWidget> {
               height: 36,
               width: 323,
               child:
-              MaterialButton(onPressed: () {  },
+              MaterialButton(onPressed: () {
+                //getNewData(namesCities[i]);
+              },
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(30.0),
@@ -115,4 +118,4 @@ class _CityWidget extends State<CityWidget> {
       ),
     );
   }
-}
+}*/

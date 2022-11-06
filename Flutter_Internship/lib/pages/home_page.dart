@@ -17,7 +17,6 @@ class HomePage extends StatelessWidget {
           scrollDirection: Axis.vertical,
           children: const [
             HeaderWidget(),
-            CitiesWidget(),
             FAQ(),
             FooterWidget(),
           ],
