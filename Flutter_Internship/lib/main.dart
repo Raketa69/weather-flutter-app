@@ -5,6 +5,10 @@ import 'package:flutter_internship/theme.dart';
 
 void main() => runApp(WeatherApp());
 
+/*  @dart=2.9
+    set to top for APK
+*/
+
 class WeatherApp extends StatelessWidget {
   const WeatherApp({Key? key}) : super(key: key);
 
