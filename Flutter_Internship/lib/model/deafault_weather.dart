@@ -3,7 +3,7 @@ import 'package:flutter_internship/model/weather_data.dart';
 class DefaultWeather extends Weather {
   var temp;
   double? tempMin;
-  double? tempMax;
+  var tempMax;
   var icon;
   String? main;
   String? description;
@@ -17,7 +17,7 @@ class DefaultWeather extends Weather {
     this.icon = 'cloud';
     this.main = 'Drizzle';
     this.description = 'Light intensity drizzle';
-    this.name = 'Odessa, ';
+    this.name = 'Odessa';
     this.country = 'Ukraine';
   }
 }

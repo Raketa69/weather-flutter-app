@@ -25,7 +25,6 @@ class City {
 
 class _HeaderWidget extends State<HeaderWidget> {
   _HeaderWidget() {
-    getNewData('');
   }
 
   late double vh;
@@ -35,16 +34,10 @@ class _HeaderWidget extends State<HeaderWidget> {
   List<Weather>? dataList;
   DefaultWeather _defaultWeather = new DefaultWeather();
   bool _isShowKeyboard = false;
-  final _cities = citiesListData;
   final _searchController = TextEditingController();
   String defaultNum = "City not found, please try to change your search query";
-  late String tmpCityName = 'NULL';
-  late List<Map<String, String>> _filterCities = [
-    {
-      'name': 'City not found',
-      'country': 'please try to change your search query'
-    }
-  ];
+  var tmpCityName = [];
+
   final Keyboard.KeyboardListener _keyboardListener =
       Keyboard.KeyboardListener();
   List namesCities = ['New York', 'London', 'Dubai', 'Paris'];
@@ -72,6 +65,7 @@ class _HeaderWidget extends State<HeaderWidget> {
   @override
   void initState() {
     super.initState();
+    setDefaultWeather();
     _searchController.addListener(_searchCities);
     _keyboardListener.addListener(onChange: (bool isVisible) {
       setState(() {
@@ -80,7 +74,7 @@ class _HeaderWidget extends State<HeaderWidget> {
     });
   }
 
-  var resultList;
+  var resultList = [];
 
   @override
   void dispose() {
@@ -92,12 +86,23 @@ class _HeaderWidget extends State<HeaderWidget> {
     try {
       var tmpData = await client.getCurrentWeatherListCities(city);
       print('******************************');
+     // print('${tmpData.runtimeType}');
       print('${tmpData}');
-      resultList = [
-        for (var item in tmpData) "${item['name']}, ${item['sys']['country']}"
-      ];
+      if(tmpData!=[]) {
+        resultList = [
+          for (var item in tmpData) "${item['name']}, ${item['sys']['country']}"
+        ];
+      }
+      if(resultList.length > 4)
+        {
+          resultList.length = 4;
+        }
       print('------------------------');
-      print('$resultList');
+      for(var item in resultList)
+        {
+          print(item);
+        }
+      //print('$resultList');
       print('------------------------');
     } catch (e) {
       print(e.runtimeType);
@@ -105,26 +110,22 @@ class _HeaderWidget extends State<HeaderWidget> {
   }
 
   Future<void> getNewData(String city) async {
-    try {
-      /*for (var item in tmpData) {
-        print('//////////');
-        print('$item');
-        print('//////////');
-      }*/
-      print('$data');
-      data = await client.getCurrentWeather(city);
-    } catch (e) {
-      print(e.runtimeType);
-    }
-    ;
+    data = await client.getCurrentWeather(city);
     if (city.isNotEmpty) {
+      try {
+        print('$data');
+      } catch (e) {
+        //print(e.runtimeType);
+      }
       setState(() {
         data = data;
       });
     }
     if (data?.name == null) {
       //print('ERROR: ${data?.name}');
+      setDefaultWeather();
       setState(() {
+        print('setDefaultWeather();');
         setDefaultWeather();
       });
     }
@@ -188,7 +189,6 @@ class _HeaderWidget extends State<HeaderWidget> {
   }
 
   Widget weatherInfo() {
-    getNewData('');
     return (Container(
       decoration: BoxDecoration(
         color: Colors.white,
@@ -242,15 +242,28 @@ class _HeaderWidget extends State<HeaderWidget> {
       ]),
     ));
   }
-
+var tempText;
   Widget searchBar() {
     return (TextField(
       controller: _searchController,
       onSubmitted: (text) {
         setState(() {
-          if (text.isNotEmpty) getNewData(text);
-        });
+          if (text.isNotEmpty) {
+            //getNewData(text);
+          }
+
+        }
+        );
       },
+
+        onChanged: (text){
+          setState(() {
+            tempText = text;
+            print('PRINT STATE $tempText');
+            if (text.isNotEmpty) getNewCities(text);
+          }
+          );
+    },
       decoration: InputDecoration(
           hintStyle: TextStyle(color: Colors.grey),
           hintText: "Start typing to search...",
@@ -272,33 +285,65 @@ class _HeaderWidget extends State<HeaderWidget> {
         child: Container(
           //margin: EdgeInsets.all(10),
           width: 340,
-          child: Padding(
-            padding: EdgeInsets.fromLTRB(14, 7, 14, 7),
-            child: Text(
-              '${_newCity}',
-              //'Not found',
-              style: TextStyle(fontSize: 16),
-            ),
-          ),
           decoration: BoxDecoration(
               color: Colors.white10, borderRadius: BorderRadius.circular(30.0)),
-        ));
+          //margin: EdgeInsets.all(10),
+          //width: 340,
+          child: Padding(
+            padding: EdgeInsets.fromLTRB(0, 0, 0, 0),
+            child: MaterialButton  (onPressed: () {
+              getNewData(_newCity);
+              //_isShowKeyboard = false;
+              //FocusScope.of(context).unfocus();
+            },
+              shape: RoundedRectangleBorder(borderRadius:BorderRadius.circular(22.0) ),
+              elevation: 18.0,
+              splashColor: Color.fromRGBO(144, 202, 249, 50),
+             // borderRadius: BorderRadius.circular(30.0),,
+             child: Align(
+                alignment: Alignment.centerLeft,
+                child:  Text(
+                        _newCity,
+                        //'Not found',
+                        style: TextStyle(fontSize: 16), textAlign: TextAlign.left,
+                    ),
+                ),
+
+              ),
+            )
+        )
+    );
   }
 
+  Widget notFoundWidget()
+  {
+    return Padding(
+      padding: const EdgeInsets.all(0.0),
+      child: Center(
+        child: Text(
+            notFoundString, style: TextStyle(
+          color: Colors.grey,
+          fontSize: 16
+        ),
+        ),
+      ),
+    );
+  }
+
+String notFoundString = 'City not found, please try to change your search query.';
   Widget citiesList() {
     return (Container(
       decoration: BoxDecoration(
-          color: Colors.blueAccent, borderRadius: BorderRadius.circular(30.0)),
-      height: 196,
+          color: Colors.white, borderRadius: BorderRadius.circular(30.0)),
+      height: 37 * (resultList.length + 1),
       width: 343,
-      child: ListView.builder(
+      child: ListView(
         scrollDirection: Axis.vertical,
-        //itemCount: 4,
-        itemExtent: 50,
-        itemBuilder: (BuildContext context, int index) {
-          return Row(
-            children: resultList!=null?[for(var item in resultList) itemCitiesList(item)]:[Text('Penis')],
-
+       //itemCount: 4,
+        itemExtent: 40,
+        /*itemBuilder: (BuildContext context, int index) {
+          return */
+            children: resultList==null||resultList.isEmpty?[notFoundWidget()]:[for(var item in resultList) itemCitiesList(item)],
               /*itemCitiesList(resultList)*/
               /*resultList
               .map(
@@ -319,8 +364,7 @@ class _HeaderWidget extends State<HeaderWidget> {
             //itemCitiesList(_filterCities.elementAt(1).toString()),
             //itemCitiesList(_filterCities.elementAt(0).toString()),
             // itemCitiesList(_filterCities.elementAt(1).toString()),
-          );
-        },
+
       ),
     ));
   }
@@ -353,7 +397,8 @@ class _HeaderWidget extends State<HeaderWidget> {
                 opacity: _isShowKeyboard ? 1.0 : 0.0,
                 //opacity: 1.0,
                 child: citiesList(),
-              )),
+              )
+          ),
         ],
       ),
     );
@@ -432,6 +477,7 @@ class _HeaderWidget extends State<HeaderWidget> {
 
   void setCity(text) {
     print('setCity getNewData WORK');
+
     setState(() {
       print('setCity getNewData WORK');
       getNewData(text);
@@ -459,7 +505,7 @@ class _HeaderWidget extends State<HeaderWidget> {
               child: MaterialButton(
                 onPressed: () {
                   print('namesCities: {$nameCity}');
-                  if (nameCity.isNotEmpty) getNewData(nameCity.toString());
+                  getNewData(nameCity.toString());
                 },
                 color: Colors.white,
                 shape: RoundedRectangleBorder(
