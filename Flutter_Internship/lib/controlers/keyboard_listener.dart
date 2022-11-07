@@ -8,13 +8,10 @@ typedef KeyboardChangeListener = Function(bool isVisible);
 class KeyboardListener with WidgetsBindingObserver {
   static final Random _random = Random();
 
-  /// Колбэки, вызывающиеся при появлении и сокрытии клавиатуры
   final Map<String, KeyboardChangeListener> _changeListeners = {};
 
-  /// Колбэки, вызывающиеся при появлении клавиатуры
   final Map<String, VoidCallback> _showListeners = {};
 
-  /// Колбэки, вызывающиеся при сокрытии клавиатуры
   final Map<String, VoidCallback> _hideListeners = {};
 
   bool get isVisibleKeyboard =>
@@ -25,23 +22,17 @@ class KeyboardListener with WidgetsBindingObserver {
   }
 
   void dispose() {
-    // Удаляем текущий класс из списка наблюдателей
     WidgetsBinding.instance.removeObserver(this);
-    // Очищаем списки колбэков
     _changeListeners.clear();
     _showListeners.clear();
     _hideListeners.clear();
   }
 
-
-  /// При изменениях системного UI вызываем слушателей
   @override
   void didChangeMetrics() {
     _listener();
   }
 
-
-  /// Метод добавления слушателей
   String addListener({
     String? id,
     KeyboardChangeListener? onChange,
@@ -50,7 +41,6 @@ class KeyboardListener with WidgetsBindingObserver {
   }) {
     assert(onChange != null || onShow != null || onHide != null);
 
-    /// Для более удобного доступа к слушателям используются идентификаторы
     id ??= _generateId();
 
     if (onChange != null) _changeListeners[id] = onChange;
@@ -59,7 +49,6 @@ class KeyboardListener with WidgetsBindingObserver {
     return id;
   }
 
-  /// Методы удаления слушателей
   void removeChangeListener(KeyboardChangeListener listener) {
     _removeListener(_changeListeners, listener);
   }
@@ -97,7 +86,7 @@ class KeyboardListener with WidgetsBindingObserver {
   }
 
   void _init() {
-    WidgetsBinding.instance.addObserver(this); // Регистрируем наблюдателя
+    WidgetsBinding.instance.addObserver(this);
   }
 
   void _listener() {

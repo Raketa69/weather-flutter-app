@@ -10,7 +10,7 @@ class DefaultWeather extends Weather {
   String? name;
   String? country;
 
-  DefaultWeather(){
+  DefaultWeather() {
     this.temp = 23;
     this.tempMin = 33;
     this.tempMax = 33;

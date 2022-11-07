@@ -6,7 +6,6 @@ class FAQ extends StatefulWidget {
 
   @override
   State<FAQ> createState() => _FAQ();
-
 }
 
 const List<String> list = <String>['One', 'Two', 'Three', 'Four'];
@@ -19,40 +18,27 @@ class _FAQ extends State<FAQ> {
 
   @override
   Widget build(BuildContext context) {
-
-    vh = MediaQuery
-        .of(context)
-        .size
-        .height;
-    vw = MediaQuery
-        .of(context)
-        .size
-        .width;
+    vh = MediaQuery.of(context).size.height;
+    vw = MediaQuery.of(context).size.width;
 
     return Container(
-      height: 0.85*vh,
+      height: 0.85 * vh,
       width: vw,
-      child: Column(
-        children: const [
-          Padding(
+      child: Column(children: const [
+        Padding(
             padding: EdgeInsets.only(top: 50, bottom: 30),
-            child: Text('Frequently Asked \n Questions',
-            style: TextStyle(
-              fontSize: 28,
-              fontWeight: FontWeight.bold
-              ),
-            )
-          ),
-          DropdownButton(),
-        ]
-      ),
+            child: Text(
+              'Frequently Asked \n Questions',
+              style: TextStyle(fontSize: 28, fontWeight: FontWeight.bold),
+            )),
+        DropdownButton(),
+      ]),
     );
   }
 }
 
 class DropdownButton extends StatefulWidget {
   const DropdownButton({Key? key}) : super(key: key);
-
 
   @override
   State<DropdownButton> createState() => _DropdownButton();
@@ -68,6 +54,7 @@ class _DropdownButton extends State<DropdownButton> {
       data: _generateData(),
     );
   }
+
   List<List<String>> _generateData() {
     int numberOfGroups = 4;
     List<List<String>> results = <List<String>>[];

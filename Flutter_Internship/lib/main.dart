@@ -1,13 +1,8 @@
 import 'package:adaptive_theme/adaptive_theme.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_internship/pages/home_page.dart';
-import 'package:flutter_internship/theme.dart';
 
 void main() => runApp(WeatherApp());
-
-/*  @dart=2.9
-    set to top for APK
-*/
 
 class WeatherApp extends StatelessWidget {
   const WeatherApp({Key? key}) : super(key: key);
@@ -15,8 +10,8 @@ class WeatherApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AdaptiveTheme(
-      light: kLightTheme,
-      dark: kDarkTheme,
+      light: ThemeData(fontFamily: 'Roboto'),
+      dark: ThemeData(fontFamily: 'Roboto'),
       initial: AdaptiveThemeMode.light,
       builder: (light, dark) => MaterialApp(
         theme: light,
